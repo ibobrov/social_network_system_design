@@ -26,22 +26,22 @@ paths:
               properties:
                 name:
                   type: string
-                  description: name
+                  description: Название
                 country:
                   type: string
-                  description: country
+                  description: Страна
                 category:
                   type: string
-                  description: category
+                  description: Категория
                 ratting:
                   type: string
                   description: популярность места
                 page:
                   type: integer
-                  description: page
+                  description: Номер страницы
                 pageSize:
                   type: integer
-                  description: page size
+                  description: Размер страницы
             examples:
               request:
                 value:
@@ -86,11 +86,11 @@ paths:
           description: Bad Request
         500:
           description: Server error
-          
+
   /places/get-posts/{id}:
     get:
       summary: Подборка свежих популярных постов
-      description: Получить самые просматриваемые и обсуждаемые посты
+      description: Получить самые просматриваемые и обсуждаемые посты данного места
       tags:
         - Places
       parameters:
@@ -150,7 +150,7 @@ paths:
           description: Bad Request
         500:
           description: Server error
-          
+
   /posts/new:
     post:
       summary: Опубликовать новый пост
@@ -167,7 +167,7 @@ paths:
                 placeId:
                   type: string
                   description: Идентификатор места
-                text: 
+                text:
                   type: string
                   description: Авторский текст в посте
                 imgUrls:
@@ -191,7 +191,7 @@ paths:
           description: Bad Request
         500:
           description: Server error
-      
+
   /posts/{id}/like:
     get:
       summary: Поставить лайк
@@ -212,7 +212,7 @@ paths:
           description: Bad Request
         500:
           description: Server error
-      
+
   /posts/{id}/comment:
     post:
       summary: Оставить комментарий
@@ -246,12 +246,12 @@ paths:
         400:
           description: Bad Request
         500:
-          description: Server error      
-      
+          description: Server error
+
   /newsfeed/:
     get:
-      summary: Получить свою ленту
-      description: Получить свою ленту в хронологическом порядке
+      summary: Получить ленту новостей
+      description: Получить ленту с подобранными постами авторов. на которых подписан пользователь, в хронолагическом порядке
       tags:
         - News feed
       responses:
@@ -303,8 +303,65 @@ paths:
         400:
           description: Bad Request
         500:
-          description: Server error     
-      
+          description: Server error
+
+  /newsfeed/self:
+    get:
+      summary: Получить свою хронологическую ленту
+      description: Получить ленту только своих постов в хронологическом порядке
+      tags:
+        - News feed
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Идентификатор места
+                  name:
+                    type: string
+                    description: Название
+                  country:
+                    type: string
+                    description: Страна
+                  category:
+                    type: string
+                    description: Категория
+                required:
+                  - id
+                  - tiny_url
+              examples:
+                response:
+                  value:
+                    - id: "8eff06ed-9acb-44e7-8433-34ecf06a0d90"
+                      placeId: "48e2abda-a1e9-4df1-ad1e-5bfe1de39a4f"
+                      name: "Байкал"
+                      country: "Россия"
+                      authorId: "57c39676-274e-4884-9248-48d5e0c3a9ad"
+                      text: "Байкал… Это место оставляет такие впечатления, что словами трудно передать всю глубину"
+                      imgUrls: ["social.newtwork.ru/img1234534523.img", "social.newtwork.ru/img63434423.img"]
+                      likes: 535
+                      comments:
+                        - userId: "811083ed-fd74-4ec0-a339-caad41566a2d"
+                          userName: "Natalia"
+                          userImg: "social.newtwork.ru/users-img/34234523"
+                          text: "Как вам вода?)"
+                          createdAt: "2024-11-13 18:21:51.005Z"
+                        - userId: "e371eeda-52d4-4f55-9d2f-a8ef882c4c81"
+                          userName: "Ilya"
+                          userImg: "social.newtwork.ru/users-img/51235703"
+                          text: "Тоже был, понравилось"
+                          createdAt: "2024-11-14 12:54:31.005Z"
+                      createdAt: "2024-11-13 17:45:30.005Z"
+        400:
+          description: Bad Request
+        500:
+          description: Server error
+
   /newsfeed/{id}:
     get:
       summary: Получить ленту пользователя
@@ -367,4 +424,32 @@ paths:
         400:
           description: Bad Request
         500:
-          description: Server error 
+          description: Server error
+
+  /newsfeed/follow:
+    post:
+      summary: Подписаться на пользователя
+      description: Отслеживать новые посты пользователя и показывать их в своей ленте
+      tags:
+        - News feed
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: Идентификатор пользователя
+            examples:
+              request:
+                value:
+                  userId: "Россия"
+      responses:
+        200:
+          description: Ok
+        400:
+          description: Bad Request
+        500:
+          description: Server error
