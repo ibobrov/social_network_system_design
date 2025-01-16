@@ -4,6 +4,7 @@ tags:
   - name: Places
   - name: Posts
   - name: News feed
+  - name: Media
 
 info:
   title: Travel social network
@@ -11,43 +12,37 @@ info:
   version: 1.0.0
 
 paths:
-  /places/search:
-    post:
+  /places:
+    get:
       summary: Поиск мест
       description: Поиск мест с определенными параметрами или общий список всех мест, если параметры не переданы
       tags:
         - Places
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: Название
-                country:
-                  type: string
-                  description: Страна
-                category:
-                  type: string
-                  description: Категория
-                ratting:
-                  type: string
-                  description: популярность места
-                page:
-                  type: integer
-                  description: Номер страницы
-                pageSize:
-                  type: integer
-                  description: Размер страницы
-            examples:
-              request:
-                value:
-                  country: "Россия"
-                  category: "Горы"
-                  ratting: "Высокий"
+      parameters:
+        - in: query
+          name: name
+          description: Название
+          required: false
+        - in: query
+          name: country
+          description: Страна
+          required: false
+        - in: query
+          name: category
+          description: Категория
+          required: false
+        - in: query
+          name: ratting
+          description: Популярность места
+          required: false
+        - in: query
+          name: page
+          description: Номер страницы
+          required: false
+        - in: query
+          name: pageSize
+          description: Размер страницы
+          required: false
       responses:
         200:
           description: Ok
@@ -87,71 +82,7 @@ paths:
         500:
           description: Server error
 
-  /places/get-posts/{id}:
-    get:
-      summary: Подборка свежих популярных постов
-      description: Получить самые просматриваемые и обсуждаемые посты данного места
-      tags:
-        - Places
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: Идентификатор места
-          schema:
-            type : string
-      responses:
-        200:
-          description: Ok
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    description: Идентификатор места
-                  name:
-                    type: string
-                    description: Название
-                  country:
-                    type: string
-                    description: Страна
-                  category:
-                    type: string
-                    description: Категория
-                required:
-                  - id
-                  - tiny_url
-              examples:
-                response:
-                  value:
-                    - id: "8eff06ed-9acb-44e7-8433-34ecf06a0d90"
-                      placeId: "48e2abda-a1e9-4df1-ad1e-5bfe1de39a4f"
-                      name: "Байкал"
-                      country: "Россия"
-                      authorId: "57c39676-274e-4884-9248-48d5e0c3a9ad"
-                      text: "Байкал… Это место оставляет такие впечатления, что словами трудно передать всю глубину"
-                      imgUrls: ["social.newtwork.ru/img1234534523.img", "social.newtwork.ru/img63434423.img"]
-                      likes: 535
-                      comments:
-                        - userId: "811083ed-fd74-4ec0-a339-caad41566a2d"
-                          userName: "Natalia"
-                          userImg: "social.newtwork.ru/users-img/34234523"
-                          text: "Как вам вода?)"
-                          createdAt: "2024-11-13 18:21:51.005Z"
-                        - userId: "e371eeda-52d4-4f55-9d2f-a8ef882c4c81"
-                          userName: "Ilya"
-                          userImg: "social.newtwork.ru/users-img/51235703"
-                          text: "Тоже был, понравилось"
-                          createdAt: "2024-11-14 12:54:31.005Z"
-                      createdAt: "2024-11-13 17:45:30.005Z"
-        400:
-          description: Bad Request
-        500:
-          description: Server error
-
-  /posts/new:
+  /posts:
     post:
       summary: Опубликовать новый пост
       description: Опубликовать новый пост
@@ -192,19 +123,57 @@ paths:
         500:
           description: Server error
 
-  /posts/{id}/like:
+  /posts/likes:
     get:
+      summary: Получить лайки
+      description: Получить лайки
+      tags:
+        - Posts
+      parameters:
+        - in: query
+          name: page
+          description: Номер страницы
+          required: false
+        - in: query
+          name: pageSize
+          description: Размер страницы
+          required: false
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                    description: Идентификатор пользователя
+                  createdAt:
+                    type: string
+                    description: Когда поставлен
+                required:
+                  - userId
+                  - createdAt
+              examples:
+                response:
+                  value:
+                    - userId: "8eff06ed-9acb-44e7-8433-34ecf06a0d90"
+                      createdAt: "2024-11-13 18:21:51.005Z"
+        400:
+          description: Bad Request
+        500:
+          description: Server error
+    post:
       summary: Поставить лайк
       description: Поставить лайк
       tags:
         - Posts
       parameters:
         - name: id
-          in: path
+          in: query
           required: true
           description: Идентификатор поста
-          schema:
-            type : string
       responses:
         200:
           description: Ok
@@ -213,7 +182,52 @@ paths:
         500:
           description: Server error
 
-  /posts/{id}/comment:
+  /posts/comments:
+    get:
+      summary: Получить комментарий
+      description: Получить комментарий
+      tags:
+        - Posts
+      parameters:
+        - in: query
+          name: page
+          description: Номер страницы
+          required: false
+        - in: query
+          name: pageSize
+          description: Размер страницы
+          required: false
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                    description: Идентификатор пользователя
+                  text:
+                    type: string
+                    description: Комментарий
+                  createdAt:
+                    type: string
+                    description: Когда написан
+                required:
+                  - userId
+                  - text
+                  - createdAt
+              examples:
+                response:
+                  value:
+                    - userId: "8eff06ed-9acb-44e7-8433-34ecf06a0d90"
+                      text: "Как вам водичка?)"
+                      createdAt: "2024-11-13 18:21:51.005Z"
+        400:
+          description: Bad Request
+        500:
+          description: Server error
     post:
       summary: Оставить комментарий
       description: Оставить комментарий
@@ -221,11 +235,9 @@ paths:
         - Posts
       parameters:
         - name: id
-          in: path
+          in: query
           required: true
           description: Идентификатор поста
-          schema:
-            type : string
       requestBody:
         required: true
         content:
@@ -248,133 +260,25 @@ paths:
         500:
           description: Server error
 
-  /newsfeed/:
+  /newsfeed:
     get:
-      summary: Получить ленту новостей
-      description: Получить ленту с подобранными постами авторов. на которых подписан пользователь, в хронолагическом порядке
-      tags:
-        - News feed
-      responses:
-        200:
-          description: Ok
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    description: Идентификатор места
-                  name:
-                    type: string
-                    description: Название
-                  country:
-                    type: string
-                    description: Страна
-                  category:
-                    type: string
-                    description: Категория
-                required:
-                  - id
-                  - tiny_url
-              examples:
-                response:
-                  value:
-                    - id: "8eff06ed-9acb-44e7-8433-34ecf06a0d90"
-                      placeId: "48e2abda-a1e9-4df1-ad1e-5bfe1de39a4f"
-                      name: "Байкал"
-                      country: "Россия"
-                      authorId: "57c39676-274e-4884-9248-48d5e0c3a9ad"
-                      text: "Байкал… Это место оставляет такие впечатления, что словами трудно передать всю глубину"
-                      imgUrls: ["social.newtwork.ru/img1234534523.img", "social.newtwork.ru/img63434423.img"]
-                      likes: 535
-                      comments:
-                        - userId: "811083ed-fd74-4ec0-a339-caad41566a2d"
-                          userName: "Natalia"
-                          userImg: "social.newtwork.ru/users-img/34234523"
-                          text: "Как вам вода?)"
-                          createdAt: "2024-11-13 18:21:51.005Z"
-                        - userId: "e371eeda-52d4-4f55-9d2f-a8ef882c4c81"
-                          userName: "Ilya"
-                          userImg: "social.newtwork.ru/users-img/51235703"
-                          text: "Тоже был, понравилось"
-                          createdAt: "2024-11-14 12:54:31.005Z"
-                      createdAt: "2024-11-13 17:45:30.005Z"
-        400:
-          description: Bad Request
-        500:
-          description: Server error
-
-  /newsfeed/self:
-    get:
-      summary: Получить свою хронологическую ленту
-      description: Получить ленту только своих постов в хронологическом порядке
-      tags:
-        - News feed
-      responses:
-        200:
-          description: Ok
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    description: Идентификатор места
-                  name:
-                    type: string
-                    description: Название
-                  country:
-                    type: string
-                    description: Страна
-                  category:
-                    type: string
-                    description: Категория
-                required:
-                  - id
-                  - tiny_url
-              examples:
-                response:
-                  value:
-                    - id: "8eff06ed-9acb-44e7-8433-34ecf06a0d90"
-                      placeId: "48e2abda-a1e9-4df1-ad1e-5bfe1de39a4f"
-                      name: "Байкал"
-                      country: "Россия"
-                      authorId: "57c39676-274e-4884-9248-48d5e0c3a9ad"
-                      text: "Байкал… Это место оставляет такие впечатления, что словами трудно передать всю глубину"
-                      imgUrls: ["social.newtwork.ru/img1234534523.img", "social.newtwork.ru/img63434423.img"]
-                      likes: 535
-                      comments:
-                        - userId: "811083ed-fd74-4ec0-a339-caad41566a2d"
-                          userName: "Natalia"
-                          userImg: "social.newtwork.ru/users-img/34234523"
-                          text: "Как вам вода?)"
-                          createdAt: "2024-11-13 18:21:51.005Z"
-                        - userId: "e371eeda-52d4-4f55-9d2f-a8ef882c4c81"
-                          userName: "Ilya"
-                          userImg: "social.newtwork.ru/users-img/51235703"
-                          text: "Тоже был, понравилось"
-                          createdAt: "2024-11-14 12:54:31.005Z"
-                      createdAt: "2024-11-13 17:45:30.005Z"
-        400:
-          description: Bad Request
-        500:
-          description: Server error
-
-  /newsfeed/{id}:
-    get:
-      summary: Получить ленту пользователя
-      description: Получить ленту пользователя в хронологическом порядке
+      summary: Подборка свежих популярных постов
+      description: Получить самые просматриваемые и обсуждаемые посты
       tags:
         - News feed
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: Идентификатор пользователя
-          schema:
-            type : string
+        - in: path
+          name: placeId
+          description: Идентификатор места
+          required: false
+        - in: query
+          name: page
+          description: Номер страницы
+          required: false
+        - in: query
+          name: pageSize
+          description: Размер страницы
+          required: false
       responses:
         200:
           description: Ok
@@ -407,7 +311,7 @@ paths:
                       country: "Россия"
                       authorId: "57c39676-274e-4884-9248-48d5e0c3a9ad"
                       text: "Байкал… Это место оставляет такие впечатления, что словами трудно передать всю глубину"
-                      imgUrls: ["social.newtwork.ru/img1234534523.img", "social.newtwork.ru/img63434423.img"]
+                      imgUrls: [ "social.newtwork.ru/img1234534523.img", "social.newtwork.ru/img63434423.img" ]
                       likes: 535
                       comments:
                         - userId: "811083ed-fd74-4ec0-a339-caad41566a2d"
@@ -426,26 +330,103 @@ paths:
         500:
           description: Server error
 
-  /newsfeed/follow:
+  /newsfeed/users/{id}:
     post:
       summary: Подписаться на пользователя
       description: Отслеживать новые посты пользователя и показывать их в своей ленте
       tags:
         - News feed
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                userId:
-                  type: string
-                  description: Идентификатор пользователя
-            examples:
-              request:
-                value:
-                  userId: "Россия"
+      parameters:
+        - in: path
+          name: id
+          description: Идентификатор пользователя
+          required: false
+      responses:
+        200:
+          description: Ok
+        400:
+          description: Bad Request
+        500:
+          description: Server error
+    delete:
+      summary: Отписаться от пользователя
+      description: Перестать отслеживать новые посты пользователя и показывать их в своей ленте
+      tags:
+        - News feed
+      parameters:
+        - in: path
+          name: id
+          description: Идентификатор пользователя
+          required: false
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Идентификатор места
+                  name:
+                    type: string
+                    description: Название
+                  country:
+                    type: string
+                    description: Страна
+                  category:
+                    type: string
+                    description: Категория
+                required:
+                  - id
+                  - tiny_url
+              examples:
+                response:
+                  value:
+                    - id: "8eff06ed-9acb-44e7-8433-34ecf06a0d90"
+                      placeId: "48e2abda-a1e9-4df1-ad1e-5bfe1de39a4f"
+                      name: "Байкал"
+                      country: "Россия"
+                      category: "Водоемы"
+                      ratting: "Топ 10 в России"
+                      description: "Байкал - одно из величайших озер планеты..."
+                      imgUrl: "social.newtwork.ru/img1234534523.img"
+        400:
+          description: Bad Request
+        500:
+          description: Server error
+
+  /media/avatars:
+    post:
+      summary: Обновить аватарку
+      description: Обновить аватарку
+      tags:
+        - Media
+      parameters:
+        - in: query
+          name: file
+          description: Фото пользователя
+          required: true
+      responses:
+        200:
+          description: Ok
+        400:
+          description: Bad Request
+        500:
+          description: Server error
+
+  /media/photos:
+    post:
+      summary: Загрузить фото
+      description: Загрузить фото
+      tags:
+        - Media
+      parameters:
+        - in: query
+          name: file
+          description: Фото с путешествий
+          required: true
       responses:
         200:
           description: Ok
