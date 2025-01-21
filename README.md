@@ -85,19 +85,24 @@ Cold_disks_for_throughput = 10GB / 100Mb = 100 HDD
 Hot_disks_for_iops = 3000 / 1000 = 3 SSD
 Cold_disks_for_iops = 2000 / 100 = 20 HDD
 
-Подойдёт 30 SSD обьемом 40Tb и 170 HDD объемом 30Tb 
+Подойдёт 30 SSD обьемом 40Tb и 170 HDD объемом 30Tb (без репликации)
+Хостов для горячих постов 15 и для холодных 85 (без репликации) 
 
 Сapacity комментариев = 87Kb * 86 400 * 365 = 3Tb
 IOPS комментариев = 580 * 2 = 1600
 Disks_for_capacity = 3Tb / 4Tb = 1 SSD 
 Disks_for_throughput = 87Kb / 500MB = 1 SSD
 Disks_for_iops = 1600 / 1000 = 2 SSD
-Подойдёт 2 SSD обьемом 2-4Tb
+Подойдёт 2 SSD обьемом 2-4Tb (без репликации)
+Подойдёт один хост (без репликации)
 
 Сapacity реакций = 12Kb * 86 400 * 365 = 400Gb
 IOPS реакций = 1160 * 2 = 2400
 Disks_for_capacity = 400Gb / 500Gb = 1 SSD 
 Disks_for_throughput = 30Kb / 500MB = 1 SSD
 Disks_for_iops = 2400 / 1000 = 3 SSD
-Подойдёт 3 SSD обьемом ~200Gb
+Подойдёт 3 SSD обьемом ~200Gb (без репликации)
+Подойдёт 1-2 хоста (без репликации)
+
+Фактор репиликации 2
 ```
