@@ -21,8 +21,10 @@ Table likes {
 }
 
 Table comments {
+  id uuid [pk, unique, not null, note: 'Идентификатор места']
   user_id uuid [pk, unique, not null, note: 'Автор поста']
   post_id uuid [not null, note: 'Идентификатор поста']
+  reply_comment_id [note: 'Идентификатор комментария ответа']
   text varchar [not null, note: 'Текст комментария']
   created_at timestamp [not null, note: 'Время лайка']
 }
@@ -31,6 +33,8 @@ Table places {
   id uuid [pk, unique, not null, note: 'Идентификатор места']
   title varchar [not null, note: 'Название места']
   country varchar [not null, note: 'Страна']
+  longitude decimal [not null, note: 'Долгота']
+  latitude decimal [not null, note: 'Широта']
   category varchar[] [not null, note: 'Категории']
   ratting int [not null, note: 'Уровень популярности']
   description varchar [not null, note: 'Описание места']

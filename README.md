@@ -69,12 +69,23 @@ Like:
 
 Хранение данных
 ```
-Сapacity постов (изображений) = 250Mb * 86 400 * 365 = 8Pb
-IOPS постов (изображений по большей части) = 50 + 350 + (230 * 20) = 5000
-Disks_for_capacity = 8Pb / 100Tb = 80 SSD 
-Disks_for_throughput = 25Gb / 500Mb = 60 SSD
-Disks_for_iops = 5000 / 1000 = 5 SSD
-Подойдёт 80 SSD обьемом 100Tb
+Сapacity постов = 250Mb * 86 400 * 365 = 8Pb
+IOPS постов = 50 + 350 + (230 * 20) = 5000
+Будем хранить изображения в S3 и охлаждать данные постов через месяц.
+Будем рассчитывать что соотношении трафика к охлажденным данным 40%,
+ к новым в горячем хранилище 60%.
+Значит 1 PB горячих и 7PB холодных данных (1/10 условно)
+
+Hot_disks_for_capacity = 1Pb / 50Tb = 20 SSD
+Cold_disks_for_capacity = 5Pb / 30Tb = 170 SSD
+ 
+Hot_disks_for_throughput = 15Gb / 500Mb = 30 SSD 
+Cold_disks_for_throughput = 10GB / 100Mb = 100 HDD 
+ 
+Hot_disks_for_iops = 3000 / 1000 = 3 SSD
+Cold_disks_for_iops = 2000 / 100 = 20 HDD
+
+Подойдёт 30 SSD обьемом 40Tb и 170 HDD объемом 30Tb 
 
 Сapacity комментариев = 87Kb * 86 400 * 365 = 3Tb
 IOPS комментариев = 580 * 2 = 1600
