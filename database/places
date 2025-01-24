@@ -1,4 +1,8 @@
-// Key-value бд, redis с хранением на диске
+// Key-value бд, redis
+//
+// Replication:
+// - master-slave (async)
+// - replication factor 2
 
 Table places {
   // key
