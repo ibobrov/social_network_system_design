@@ -1,10 +1,11 @@
-// Sql бд, вроде postgres
-
-Table users {
-  id uuid [pk, unique, not null, note: 'Идентификатор пользователя']
-  name varchar [not null, note: 'Имя, логин']
-  img_link url [not null, note: 'Ссылка на аватарку']
-}
+// Sql бд, postgres
+//
+// Replication:
+// - master-slave (async)
+// - replication factor 2
+//
+// Sharding:
+// - key based by post_id
 
 Table posts {
   id uuid [pk, unique, not null, note: 'Идентификатор поста']
@@ -27,23 +28,6 @@ Table comments {
   reply_comment_id [note: 'Идентификатор комментария ответа']
   text varchar [not null, note: 'Текст комментария']
   created_at timestamp [not null, note: 'Время лайка']
-}
-
-Table places {
-  id uuid [pk, unique, not null, note: 'Идентификатор места']
-  title varchar [not null, note: 'Название места']
-  country varchar [not null, note: 'Страна']
-  longitude decimal [not null, note: 'Долгота']
-  latitude decimal [not null, note: 'Широта']
-  category varchar[] [not null, note: 'Категории']
-  ratting int [not null, note: 'Уровень популярности']
-  description varchar [not null, note: 'Описание места']
-}
-
-Table followers {
-  id uuid [pk, unique, not null, note: 'Идентификатор места']
-  user_id uuid [not null, note: 'Идентификатор места']
-  follower_id uuid [not null, note: 'Идентификатор места']
 }
 
 Ref: posts.author_id > users.id

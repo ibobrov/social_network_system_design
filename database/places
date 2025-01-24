@@ -1,0 +1,21 @@
+// Key-value бд, redis
+//
+// Replication:
+// - master-slave (async)
+// - replication factor 2
+
+Table places {
+  // key
+  id uuid [pk, unique, not null, note: 'Идентификатор места']
+
+  // value
+  {
+    title varchar [not null, note: 'Название места']
+    country varchar [not null, note: 'Страна']
+    longitude decimal [not null, note: 'Долгота']
+    latitude decimal [not null, note: 'Широта']
+    category varchar[] [not null, note: 'Категории']
+    ratting int [not null, note: 'Уровень популярности']
+    description varchar [not null, note: 'Описание места']
+  }
+}
