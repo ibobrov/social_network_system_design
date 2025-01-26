@@ -1,0 +1,25 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+!$ICONURL = "https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v3.0.0/icons"
+!include $ICONURL/common.puml
+!include $ICONURL/devicons2/spring_original.puml
+!include $ICONURL/devicons/postgresql.puml
+
+Container(gateway, "Кластер Gateway для распределения нагрузки и агрегирования данных", "Spring cloud", "Обрабатываем запросы агрегируя данные и делая запросы в нужные подсистемы", $sprite="spring_original")
+Container(posts, "Кластер микросервисов с постами пользователей", "Spring", "Храним и обрабатываем информацию о постах, комментариях, лайках", $sprite="spring_original")
+
+System_Boundary(c2, "Кластер микросервисов с данными пользователей") {
+    Container(users, "Кластер микросервисов с данными пользователей", "Spring", "Храним и обрабатываем информацию о пользователях, подписках, генерируем ленту", $sprite="spring_original")
+    Container(feed, "Подготовка ленты пользователю", "Spring", "Подготавливаем ленту пользователей раз в n времени", $sprite="spring_original")
+    Container(users_bd, "Бд для хранения данных о пользователях", "Postgres", "Хранения данных о пользователях", $sprite="postgresql")
+    Container(feed_bd, "Бд для хранения подготовленной ленты", "Postgres", "Хранения подготовленной ленты", $sprite="postgresql")
+}
+
+Rel(gateway, users, "информация о пользователе, подписаться на кого-то", "HTTP")
+Rel(gateway, feed, "запрос ленты", "HTTP")
+Rel(posts, feed, "новые посты", "Kafka")
+
+Rel(users, users_bd, "запись / чтение", "HTTP")
+Rel(feed, feed_bd, "запись / чтение", "HTTP")
+@enduml

@@ -1,0 +1,28 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+!$ICONURL = "https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v3.0.0/icons"
+!include $ICONURL/common.puml
+!include $ICONURL/devicons/nginx.puml
+!include $ICONURL/devicons2/spring_original.puml
+!include $ICONURL/material/cached.puml
+
+Container(balancer, "L3/L4 Балансировщик", "NGINX", "Распределяем входящий трафик", $sprite="nginx")
+
+System_Boundary(c2, "Кластер Gateway для распределения нагрузки") {
+    Container(gateway, "Кластер Gateway для распределения нагрузки и агрегирования данных", "Spring cloud", "Обрабатываем запросы агрегируя данные и делая запросы в нужные подсистемы", $sprite="spring_original")
+    Container(post_cache, "Распределенный кеш постов", "Hazelcast", "Обрабатываем запросы агрегируя данные и делая запросы в нужные подсистемы", $sprite="cached")
+    Container(locations_cache, "Распределенный кеш локаций", "Hazelcast", "Обрабатываем запросы агрегируя данные и делая запросы в нужные подсистемы", $sprite="cached")
+}
+
+Container(users, "Кластер микросервисов с данными пользователей", "Spring", "Храним и обрабатываем информацию о пользователях, подписках, генерируем ленту", $sprite="spring_original")
+Container(posts, "Кластер микросервисов с постами пользователей", "Spring", "Храним и обрабатываем информацию о постах, комментариях, лайках", $sprite="spring_original")
+Container(locations, "Кластер микросервисов с локациями для путешествий", "Spring", "Храним и обрабатываем информацию о локациях", $sprite="spring_original")
+
+Rel(balancer, gateway, "проксирование/балансировка", "HTTP")
+Rel(gateway, post_cache, "пробуем найти пост", "HTTP")
+Rel(post_cache, posts, "идём за постом", "HTTP")
+Rel(gateway, locations_cache, "пробуем найти локацию", "HTTP")
+Rel(locations_cache, locations, "идем за локацией", "HTTP")
+Rel(gateway, users, "информация о пользователе или интересах", "HTTP")
+@enduml
