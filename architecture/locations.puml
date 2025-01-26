@@ -1,0 +1,20 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+!$ICONURL = "https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v3.0.0/icons"
+!include $ICONURL/common.puml
+!include $ICONURL/devicons2/spring_original.puml
+!include $ICONURL/devicons/postgresql.puml
+
+Container(gateway, "Кластер Gateway для распределения нагрузки и агрегирования данных", "Spring cloud", "Обрабатываем запросы агрегируя данные и делая запросы в нужные подсистемы", $sprite="spring_original")
+
+System_Boundary(c2, "Кластер микросервисов с локациями для путешествий") {
+    Container(locations, "Кластер микросервисов с локациями для путешествий", "Spring", "Храним и обрабатываем информацию о локациях", $sprite="spring_original")
+    Container(geo_api, "Geo Api", "Spring", "Работа с картами и внешними сервисами для гео данных", $sprite="spring_original")
+    Container(locations_bd, "Бд для хранения локаций", "Postgres", "Хранения данных о пользователях", $sprite="postgresql")
+}
+
+Rel(gateway, locations, "запрос постов", "HTTP")
+Rel(locations, geo_api, "поиск и проверка локаций", "HTTP")
+Rel(locations, locations_bd, "запись / чтение", "HTTP")
+@enduml

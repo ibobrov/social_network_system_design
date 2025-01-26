@@ -1,0 +1,22 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+!$ICONURL = "https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v3.0.0/icons"
+!include $ICONURL/common.puml
+!include $ICONURL/devicons2/spring_original.puml
+!include $ICONURL/devicons/postgresql.puml
+
+Container(gateway, "Кластер Gateway для распределения нагрузки и агрегирования данных", "Spring cloud", "Обрабатываем запросы агрегируя данные и делая запросы в нужные подсистемы", $sprite="spring_original")
+
+System_Boundary(c2, "Сервера авторизации") {
+    Container(security, "Сервер авторизации", "Spring cloud", "Авторизуем / регистрируем пользователя", $sprite="spring_original")
+    Container(emailer, "МС для отправки сообщений по почте", "Spring cloud", "Создание аккаунта / сброс пароля", $sprite="spring_original")
+    Container(telephoner, "МС для отправки смс", "Spring cloud", "Создание аккаунта / сброс пароля", $sprite="spring_original")
+    Container(bd, "Бд для хранения данных о пользователях", "Postgres", "Хранения данных о пользователях", $sprite="postgresql")
+}
+
+Rel(gateway, security, "проверка авторизации/ролей", "Kafka")
+Rel(security, emailer, "отправить на почту письмо", "Kafka")
+Rel(security, telephoner, "отправить на телефон смс", "Kafka")
+Rel(security, bd, "запись / чтение", "HTTP")
+@enduml

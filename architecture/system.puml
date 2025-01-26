@@ -1,0 +1,31 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+!$ICONURL = "https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v3.0.0/icons"
+!include $ICONURL/common.puml
+!include $ICONURL/devicons/nginx.puml
+!include $ICONURL/material/devices.puml
+!include $ICONURL/devicons2/spring_original.puml
+!include $ICONURL/font-awesome-6/amazon.puml
+
+Person(devices, "Клиентские устройства", "браузер / десктоп / мобильные устройства", $sprite="devices")
+
+System_Boundary(c1, "Социальная сеть для путешественников") {
+    Container(balancer, "L3/L4 Балансировщик", "NGINX", "Распределяем входящий трафик", $sprite="nginx")
+    Container(gateway, "Кластер Gateway для распределения нагрузки и агрегирования данных", "Spring cloud", "Обрабатываем запросы агрегируя данные и делая запросы в нужные подсистемы", $sprite="spring_original")
+    Container(security, "Сервера авторизации", "Spring cloud", "Авторизуем / регистрируем пользователя", $sprite="spring_original")
+    Container(users, "Кластер микросервисов с данными пользователей", "Spring", "Храним и обрабатываем информацию о пользователях, подписках, генерируем ленту", $sprite="spring_original")
+    Container(posts, "Кластер микросервисов с постами пользователей", "Spring", "Храним и обрабатываем информацию о постах, комментариях, лайках", $sprite="spring_original")
+    Container(locations, "Кластер микросервисов с локациями для путешествий", "Spring", "Храним и обрабатываем информацию о локациях", $sprite="spring_original")
+    Container(s3, "Кластер S3 для фото пользователей", "S3", "Храним фото, делаем на них ссылки", $sprite="amazon")
+}
+
+Rel(devices, balancer, "запрос", "HTTP")
+Rel(balancer, gateway, "проксирование/балансировка", "HTTP")
+Rel(gateway, security, "проверка авторизации/ролей", "HTTP")
+Rel(gateway, users, "информация о пользователе или интересах", "HTTP")
+Rel(gateway, posts, "информация о постах, лайках, комментариях", "HTTP")
+Rel(gateway, locations, "информация о локациях", "HTTP")
+Rel(balancer, s3, "перенаправляем на статический ссылки с изображениями", "HTTP")
+Rel(gateway, s3, "загружаем изображения и получаем ссылки на них", "HTTP")
+@enduml
